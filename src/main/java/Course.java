@@ -11,8 +11,9 @@ public class Course {
     private int enrolled;
     private int maxCapacity;
     private List<Course> sections;
+    private Course lecture;
 
-    public Course(String courseId, String title, String enrollCode, List<String> instructors, String days, String times, String location, int enrolled, int maxCapacity, List<Course> sections) {
+    public Course(String courseId, String title, String enrollCode, List<String> instructors, String days, String times, String location, int enrolled, int maxCapacity, List<Course> sections, Course lecture) {
         this.courseId = courseId;
         this.title = title;
         this.enrollCode = enrollCode;
@@ -23,5 +24,10 @@ public class Course {
         this.enrolled = enrolled;
         this.maxCapacity = maxCapacity;
         this.sections = sections;
+        this.lecture = lecture;
+    }
+
+    public void addSections(Course section) {
+        this.sections.add(section);
     }
 }

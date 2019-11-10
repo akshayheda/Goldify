@@ -13,15 +13,21 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 
 public class WebClient {
     private static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     public static void main(String[] args) {
-        System.out.println(getAspxWebpage());
+//        System.out.println(getAspxWebpage(Department.ANTH.getCode(), Quarter.FALL_19.getCode()));
+        parse(getAspxWebpage(Department.ANTH.getCode(), Quarter.FALL_19.getCode()));
     }
-    
 
-    public static String getAspxWebpage() {
+    public static String getAspxWebpage(String department, String quarter) {
         CloseableHttpClient client = HttpClients.custom().build();
 
         HttpPost post = new HttpPost(DefaultValues.SCHEDULE_URL);
@@ -33,6 +39,8 @@ public class WebClient {
         for(Map.Entry<String, String> field : DefaultValues.X_FORM_ENCODED.entrySet()) {
             formData.add(new BasicNameValuePair(field.getKey(), field.getValue()));
         }
+        formData.add(new BasicNameValuePair(DefaultValues.DEPARTMENT_FIELD, department));
+        formData.add(new BasicNameValuePair(DefaultValues.QUARTER_FIELD, quarter));
         try {
             post.setEntity(new UrlEncodedFormEntity(formData, "UTF-8" ));
             CloseableHttpResponse response = client.execute(post);
@@ -43,5 +51,32 @@ public class WebClient {
             logger.log(Level.SEVERE, "Unable to make HTTP Request for scraping, caught err" + e);
         }
         return null;
+    }
+
+    public static void parse(String webpage) {
+        Document document = Jsoup.parse(webpage);
+        Elements courseRows = document.select("tr.CourseInfoRow");
+        List<Course> courses = new ArrayList<>();
+        Course previousLecture = null;
+        for (Element row : courseRows) {
+            //System.out.println(row.html());
+            Elements parts = row.select("td");
+            for(Element part : parts) {
+                System.out.println(part.ownText());
+            }
+            /*if (row is lecture) {
+                courses.add(row);
+                previousLecture = row;
+            } else{
+                if (sections == null) {
+                    sections = new ArrayList<>();
+                    previousLecture.setSections(sections);
+                }
+                row.setLecture(previousLecture);
+                sections.add(row);
+            }*/
+
+        }
+
     }
 }
