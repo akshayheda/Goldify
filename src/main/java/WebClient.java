@@ -17,11 +17,11 @@ import org.apache.http.message.BasicNameValuePair;
 public class WebClient {
     private static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     public static void main(String[] args) {
-        System.out.println(getAspxWebpage());
+        System.out.println(getAspxWebpage(Department.ANTH.getCode(), Quarter.FALL_19.getCode()));
     }
     
 
-    public static String getAspxWebpage() {
+    public static String getAspxWebpage(String department, String quarter) {
         CloseableHttpClient client = HttpClients.custom().build();
 
         HttpPost post = new HttpPost(DefaultValues.SCHEDULE_URL);
@@ -33,6 +33,8 @@ public class WebClient {
         for(Map.Entry<String, String> field : DefaultValues.X_FORM_ENCODED.entrySet()) {
             formData.add(new BasicNameValuePair(field.getKey(), field.getValue()));
         }
+        formData.add(new BasicNameValuePair(DefaultValues.DEPARTMENT_FIELD, department));
+        formData.add(new BasicNameValuePair(DefaultValues.QUARTER_FIELD, quarter));
         try {
             post.setEntity(new UrlEncodedFormEntity(formData, "UTF-8" ));
             CloseableHttpResponse response = client.execute(post);
