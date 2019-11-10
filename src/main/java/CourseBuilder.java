@@ -11,6 +11,7 @@ public class CourseBuilder {
     private String location;
     private int enrolled;
     private int maxCapacity;
+    private Course lecture;
     private List<Course> sections;
 
     public CourseBuilder(String title) {
@@ -64,7 +65,12 @@ public class CourseBuilder {
         return this;
     }
 
+    public CourseBuilder addLecture(Course lecture) {
+        this.lecture = lecture;
+        return this;
+    }
+
     public Course build() {
-        return new Course(courseId, title, enrollCode, instructors, days, times, location, enrolled, maxCapacity, sections);
+        return new Course(courseId, title, enrollCode, instructors, days, times, location, enrolled, maxCapacity, sections, lecture);
     }
 }
