@@ -1,12 +1,13 @@
-
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.regions.Regions;
-public class DAO {
-    public String url;
 
-    public DAO(String url){
-        this.url = url;
+public class DAO {
+
+    public DAO(){
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+                .build();
     }
 
 
