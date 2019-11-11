@@ -4,7 +4,7 @@ public class Course {
     private String courseId;
     private String title;
     private String enrollCode;
-    private List<String> instructors;
+    private String instructor;
     private String days;
     private String times;
     private String location;
@@ -13,11 +13,11 @@ public class Course {
     private List<Course> sections;
     private Course lecture;
 
-    public Course(String courseId, String title, String enrollCode, List<String> instructors, String days, String times, String location, int enrolled, int maxCapacity, List<Course> sections, Course lecture) {
+    public Course(String courseId, String title, String enrollCode, String instructor, String days, String times, String location, int enrolled, int maxCapacity, List<Course> sections, Course lecture) {
         this.courseId = courseId;
         this.title = title;
         this.enrollCode = enrollCode;
-        this.instructors = instructors;
+        this.instructor = instructor;
         this.days = days;
         this.times = times;
         this.location = location;
@@ -27,7 +27,19 @@ public class Course {
         this.lecture = lecture;
     }
 
-    public void addSections(Course section) {
+    public void addSection(Course section) {
         this.sections.add(section);
+    }
+
+    public void setLecture(Course lecture) {
+        this.lecture = lecture;
+    }
+
+    public String toString() {
+        String result = courseId + " " + title + " " + enrollCode + " " + instructor + " " + days + " " + times + " " + location + " " + enrolled + "/" + maxCapacity;
+        for (Course section : sections) {
+            result += "\n    " + section.toString();
+        }
+        return result;
     }
 }

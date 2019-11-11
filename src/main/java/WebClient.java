@@ -14,7 +14,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Node;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -22,9 +21,9 @@ import org.jsoup.select.Elements;
 
 public class WebClient {
     private static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     public static void main(String[] args) {
-//        System.out.println(getAspxWebpage(Department.ANTH.getCode(), Quarter.FALL_19.getCode()));
-        parse(getAspxWebpage(Department.ANTH.getCode(), Quarter.FALL_19.getCode()));
+        parse(getAspxWebpage(Department.CMPSC.getCode(), Quarter.FALL_19.getCode()));
     }
 
     public static String getAspxWebpage(String department, String quarter) {
@@ -34,6 +33,8 @@ public class WebClient {
         for(Map.Entry<String, String> header : DefaultValues.HEADERS.entrySet()) {
             post.addHeader(header.getKey(), header.getValue());
         }
+
+//        Jsoup.connect(DefaultValues.SCHEDULE_URL).followRedirects(true).request().removeHeader("User-Agent");
 
         List<NameValuePair> formData = new ArrayList<>();
         for(Map.Entry<String, String> field : DefaultValues.X_FORM_ENCODED.entrySet()) {
@@ -59,23 +60,45 @@ public class WebClient {
         List<Course> courses = new ArrayList<>();
         Course previousLecture = null;
         for (Element row : courseRows) {
-            //System.out.println(row.html());
-            Elements parts = row.select("td");
-            for(Element part : parts) {
-                System.out.println(part.ownText());
-            }
-            /*if (row is lecture) {
-                courses.add(row);
-                previousLecture = row;
-            } else{
-                if (sections == null) {
-                    sections = new ArrayList<>();
-                    previousLecture.setSections(sections);
-                }
-                row.setLecture(previousLecture);
-                sections.add(row);
-            }*/
+            String courseId = row.child(1).ownText();
+            boolean isLecture = Boolean.parseBoolean(row.child(10).text());
+            String fullState = row.child(3).text();
+            String enrollCode = row.child(4).child(0).text();
+            String title = row.child(2).text();
+            String spots = row.child(9).text();
+            String location = row.child(8).text();
+            String time = row.child(7).text();
+            String day = row.child(6).text();
+            String professor = row.child(5).text();
+            int maxCapacity = Integer.parseInt(spots.substring(spots.indexOf("/") + 2));
+            int enrolled = Integer.parseInt(spots.substring(0, spots.indexOf("/") - 1));
+//            System.out.println("course id: " + row.child(1).ownText());
+//            System.out.println("full/cancelled: " + row.child(3).text());
+//            System.out.println("enroll code: " + row.child(4).child(0).text());
+//            System.out.println("full title: " + row.child(2).text());
+//            System.out.println("lecture?: " + row.child(10).text());
+//            System.out.println("spots: " + row.child(9).text());
+//            System.out.println("location: " + row.child(8).text());
+//            System.out.println("time: " + row.child(7).text());
+//            System.out.println("day: " + row.child(6).text());
+//            System.out.println("professor: " + row.child(5).text());
+//            System.out.println("maxCapacity: " + maxCapacity);
+//            System.out.println("enrolled: " + enrolled);
+//            System.out.println("-------");
 
+            Course course = new CourseBuilder(title).setCourseId(courseId).setEnrollCode(enrollCode).setLocation(location).setTimes(time).setDays(day).setInstructor(professor).setMaxCapacity(maxCapacity).setEnrolled(enrolled).build();
+            if (isLecture) {
+                courses.add(course);
+                previousLecture = course;
+            } else if (previousLecture != null) {
+                previousLecture.addSection(course);
+                course.setLecture(previousLecture);
+            }
+
+        }
+
+        for (Course course : courses) {
+            System.out.println(course);
         }
 
     }

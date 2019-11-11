@@ -5,7 +5,7 @@ public class CourseBuilder {
     private String courseId;
     private String title;
     private String enrollCode;
-    private List<String> instructors;
+    private String instructor;
     private String days;
     private String times;
     private String location;
@@ -17,7 +17,6 @@ public class CourseBuilder {
     public CourseBuilder(String title) {
         this.title = title;
         sections = new ArrayList<>();
-        instructors = new ArrayList<>();
     }
 
     public CourseBuilder setCourseId(String courseId) {
@@ -31,7 +30,7 @@ public class CourseBuilder {
     }
 
     public CourseBuilder setInstructor(String instructor) {
-        instructors.add(instructor);
+        this.instructor = instructor;
         return this;
     }
 
@@ -71,6 +70,6 @@ public class CourseBuilder {
     }
 
     public Course build() {
-        return new Course(courseId, title, enrollCode, instructors, days, times, location, enrolled, maxCapacity, sections, lecture);
+        return new Course(courseId, title, enrollCode, instructor, days, times, location, enrolled, maxCapacity, sections, lecture);
     }
 }
